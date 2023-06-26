@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+ssh ubuntu@104.196.50.234 -i ~/.ssh/school
+mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys
+chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys
+echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCDYg206efTZ0aviwA7YGq0Kat3OKeALS8ubq/DLn90yisAeqG4Fg/FYWc6v38royMMhO6D2EKG5tAu8DE4sRpjVB9fU+hBr3LjwPCKaT4znvX+zM5GilSDqh50y2RKfXGrOo7qY31+Yo3lg+rn7RpwWgUtst2gQV3fN2L+2tkY0NTPR1zFRAnxF+BfqUBezk9RL5jZHvMoTx6oKBLXAGSo2jCMGbzHRWtm0HN >> ~/.ssh/authorized_keys
