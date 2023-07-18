@@ -1,7 +1,3 @@
 #!/usr/bin/env bash
-
-# Get the user name from the command line argument
-username=$1
-
-# Run the whoami command as the specified user
-sudo -u $username whoami
+# Runs the whoami command under the user passed as argument.
+sudo -u "$1" whoami
