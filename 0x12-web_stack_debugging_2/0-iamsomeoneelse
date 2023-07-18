@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Get the user name from the argument
+# Get the user name from the command line argument
 username=$1
 
-# Run the whoami command under the specified user
-su - $username -c "whoami"
-
-# Print the output of the whoami command
-echo "The current user is $username"
+# Run the whoami command as the specified user
+sudo -u $username whoami
