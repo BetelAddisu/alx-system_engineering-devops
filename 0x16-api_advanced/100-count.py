@@ -1,29 +1,61 @@
 #!/usr/bin/python3
+"""
+Querries the Reddit API and returns a list of the titles of all hot posts
+listed for a given subreddit
+"""
+
+import json
 import requests
 
-def count_words(subreddit, word_list):
-    cleaned_word_list = [word.lower() for word in word_list]  # convert all words to lowercase
-    counts = {}  # dictionary to store the count of each word
-    
-    # Query Reddit API and retrieve hot articles from the given subreddit
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    response = requests.get(url, headers=headers)
-    
-    if response.status_code == 200:
-        data = response.json()
-        articles = data['data']['children']
-        
-        # Parse the title of each article and count the occurrences of words
-        for article in articles:
-            title = article['data']['title'].lower()
-            for word in cleaned_word_list:
-                if word in title:
-                    counts[word] = counts.get(word, 0) + title.count(word) 
-        
-        # Print the sorted count of each word
-        sorted_counts = sorted(counts.items(), key=lambda x: (-x[1], x[0]))  # sort by count (descending) and word (ascending)
-        for count in sorted_counts:
-            print(f"{count[0]}: {count[1]}")
+
+def count_words(subreddit, word_list, hot_list=[], after=None):
+    """Return a list of the titles of all hot posts listed for a subreddit"""
+    headers = {"user-agent": "holberton"}
+    params = {"after": after}
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    subdata = requests.get(url, headers=headers, params=params)
+    if subdata.status_code != 200:
+        return None
+    data = json.loads(subdata.text).get('data').get('children')
+    after = json.loads(subdata.text).get('data').get('after')
+    if data is None:
+        if len(hot_list) == 0:
+            print("")
+            return
+        word_count = {}
+        word_list = list(set([word.lower() for word in word_list]))
+        for word in word_list:
+            word_count[word] = 0
+        for word in word_list:
+            for title in hot_list:
+                for t in title.split():
+                    if word == t.lower():
+                        word_count[word] = word_count[word] + 1
+        sort_word_count = sorted(word_count.items(), key=lambda x: x[1],
+                                 reverse=True)
+        for i in sort_word_count:
+            if i[1] > 0:
+                print("{}: {}".format(i[0], i[1]))
     else:
-        print("Invalid subreddit or no posts match.")
+        for item in data:
+            hot_list.append(item.get('data').get('title'))
+    if after is None:
+        if len(hot_list) == 0:
+            print("")
+            return
+        word_count = {}
+        word_list = list(set([word.lower() for word in word_list]))
+        for word in word_list:
+            word_count[word] = 0
+        for word in word_list:
+            for title in hot_list:
+                for t in title.split():
+                    if word.lower() == t.lower():
+                        word_count[word] = word_count[word] + 1
+        sort_word_count = sorted(word_count.items(), key=lambda x: x[1],
+                                 reverse=True)
+        for i in sort_word_count:
+            if i[1] > 0:
+                print("{}: {}".format(i[0], i[1]))
+    else:
+        return count_words(subreddit, word_list, hot_list, after)
